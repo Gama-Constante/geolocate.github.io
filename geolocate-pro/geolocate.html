@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoLocate Pro - Portal Educativo de Geolocalización</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #0a192f;
+            --secondary: #172a45;
+            --accent: #64ffda;
+            --accent-dark: #00d4aa;
+            --text: #8892b0;
+            --text-light: #ccd6f6;
+            --text-bright: #e6f1ff;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--primary);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--primary);
+            overflow: hidden;
+        }
+        
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(100, 255, 218, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(102, 126, 234, 0.05) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+        
+        /* Header */
+        header {
+            padding: 2rem 5%;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+            animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent);
+            text-decoration: none;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--gradient-3);
+            transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .logo:hover::after {
+            width: 100%;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        
+        .nav-links a:hover::before {
+            width: 100%;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 5% 4rem;
+            position: relative;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--text-bright);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #e6f1ff 0%, #64ffda 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text);
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s backwards;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: var(--gradient-3);
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.7s backwards;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(100, 255, 218, 0.4);
+        }
+        
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Section Styles */
+        section {
+            padding: 6rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60%;
+            height: 4px;
+            background: var(--gradient-3);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 4rem;
+        }
+        
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .card {
+            background: rgba(23, 42, 69, 0.4);
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-3);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 60px rgba(100, 255, 218, 0.2);
+        }
+        
+        .card:hover::before {
+            opacity: 0.05;
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+        }
+        
+        .card p {
+            color: var(--text);
+            line-height: 1.8;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 4px solid var(--accent);
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 3rem 0;
+        }
+        
+        .info-box h3 {
+            color: var(--accent);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .info-box p {
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+        
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            margin: 3rem 0;
+            border-radius: 15px;
+            background: rgba(23, 42, 69, 0.4);
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: rgba(100, 255, 218, 0.1);
+        }
+        
+        th {
+            padding: 1.5rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+        
+        td {
+            padding: 1.5rem;
+            color: var(--text-light);
+            border-top: 1px solid rgba(100, 255, 218, 0.05);
+        }
+        
+        tbody tr {
+            transition: background 0.3s ease;
+        }
+        
+        tbody tr:hover {
+            background: rgba(100, 255, 218, 0.05);
+        }
+        
+        /* Map Container */
+        #map {
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        /* Steps */
+        .steps {
+            counter-reset: step;
+            margin: 3rem 0;
+        }
+        
+        .step {
+            position: relative;
+            padding-left: 4rem;
+            margin-bottom: 3rem;
+            counter-increment: step;
+        }
+        
+        .step::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-3);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.5rem;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .step h4 {
+            color: var(--text-bright);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step p {
+            color: var(--text);
+            line-height: 1.8;
+        }
+        
+        /* Code Block */
+        .code-block {
+            background: rgba(10, 25, 47, 0.8);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            padding: 3rem 5%;
+            text-align: center;
+            border-top: 1px solid rgba(100, 255, 218, 0.1);
+        }
+        
+        footer p {
+            color: var(--text);
+        }
+        
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Location Status */
+        .location-status {
+            background: rgba(100, 255, 218, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <header>
+        <nav>
+            <a href="#" class="logo">GeoLocate Pro</a>
+            <ul class="nav-links">
+                <li><a href="#que-es">¿Qué es?</a></li>
+                <li><a href="#tipos">Tipos</a></li>
+                <li><a href="#aplicaciones">Aplicaciones</a></li>
+                <li><a href="#api">API</a></li>
+                <li><a href="#ubicaciones">Ubicaciones</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Geolocalización</h1>
+            <p>Descubre el fascinante mundo de la tecnología de ubicación y cómo está transformando nuestras vidas</p>
+            <a href="#que-es" class="cta-button">Explorar</a>
+        </div>
+    </section>
+    
+    <section id="que-es" class="fade-in">
+        <h2 class="section-title">¿Qué es Geolocalización?</h2>
+        <p class="section-subtitle">Fundamentos de la tecnología de ubicación</p>
+        
+        <div class="info-box">
+            <h3>Definición</h3>
+            <p>
+                La <strong>geolocalización</strong> es el proceso de identificar la ubicación geográfica real de un objeto, 
+                como un dispositivo móvil, computadora o cualquier dispositivo conectado a Internet. Esta tecnología utiliza 
+                diversos métodos para determinar la posición mediante coordenadas geográficas (latitud y longitud), 
+                permitiendo situar con precisión cualquier punto en la superficie terrestre.
+            </p>
+        </div>
+        
+        <div class="info-box">
+            <h3>¿Cómo funciona?</h3>
+            <p>
+                La geolocalización combina múltiples tecnologías: sistemas satelitales (GPS, GLONASS, Galileo), 
+                redes de telefonía celular, puntos de acceso Wi-Fi y direcciones IP. Los dispositivos modernos 
+                utilizan varios de estos métodos simultáneamente para mejorar la precisión y velocidad de localización, 
+                adaptándose automáticamente según las condiciones y disponibilidad de señales.
+            </p>
+        </div>
+    </section>
+    
+    <section id="tipos" class="fade-in">
+        <h2 class="section-title">Tipos de Geolocalización</h2>
+        <p class="section-subtitle">Los métodos más utilizados en la actualidad</p>
+        
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🛰️</div>
+                <h3>GPS (Global Positioning System)</h3>
+                <p>Sistema satelital que proporciona ubicación precisa mediante triangulación de señales de múltiples satélites en órbita.</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h3>A-GPS (Assisted GPS)</h3>
+                <p>Versión mejorada que utiliza datos de red celular para acelerar el tiempo de adquisición de señal satelital.</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">📡</div>
+                <h3>Cell Tower Triangulation</h3>
+                <p>Determina la ubicación basándose en la señal de las torres de telefonía celular más cercanas al dispositivo.</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">📶</div>
+                <h3>Wi-Fi Positioning</h3>
+                <p>Utiliza bases de datos de puntos de acceso Wi-Fi conocidos para estimar la ubicación con alta precisión en áreas urbanas.</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">🌐</div>
+                <h3>IP Geolocation</h3>
+                <p>Método basado en la dirección IP del dispositivo, útil para determinar ubicación aproximada a nivel de ciudad o región.</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">📍</div>
+                <h3>Bluetooth Beacons</h3>
+                <p>Dispositivos de baja energía que permiten micro-localización en espacios interiores como centros comerciales o museos.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section id="aplicaciones" class="fade-in">
+        <h2 class="section-title">Aplicaciones que Utilizan Geolocalización</h2>
+        <p class="section-subtitle">5 ejemplos populares en nuestra vida diaria</p>
+        
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🚗</div>
+                <h3>Uber</h3>
+                <p>Conecta conductores y pasajeros en tiempo real usando GPS</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">🗺️</div>
+                <h3>Google Maps</h3>
+                <p>Navegación y mapas con ubicación en tiempo real</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">📸</div>
+                <h3>Instagram</h3>
+                <p>Etiquetado de ubicación en fotos y stories</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">🎮</div>
+                <h3>Pokémon GO</h3>
+                <p>Realidad aumentada basada en ubicación geográfica</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-icon">🚦</div>
+                <h3>Waze</h3>
+                <p>Navegación colaborativa con tráfico en tiempo real</p>
+            </div>
+        </div>
+    </section>
+    
+    <section id="api" class="fade-in">
+        <h2 class="section-title">¿Qué es una API?</h2>
+        <p class="section-subtitle">Interfaz de Programación de Aplicaciones</p>
+        
+        <div class="info-box">
+            <h3>Concepto de API</h3>
+            <p>
+                Una <strong>API (Application Programming Interface)</strong> es un conjunto de reglas y protocolos que permite 
+                que diferentes aplicaciones de software se comuniquen entre sí. En el contexto de geolocalización, las APIs 
+                permiten a los desarrolladores integrar servicios de mapas y ubicación en sus aplicaciones sin necesidad de 
+                crear toda la infraestructura desde cero.
+            </p>
+        </div>
+        
+        <h3 style="color: var(--text-bright); margin: 3rem 0 1.5rem; font-size: 1.8rem;">Cómo Generar una Clave API</h3>
+        
+        <div class="steps">
+            <div class="step">
+                <h4>Crear una Cuenta en Google Cloud Platform</h4>
+                <p>Visita <a href="https://console.cloud.google.com" style="color: var(--accent);">console.cloud.google.com</a> y crea una cuenta o inicia sesión con tu cuenta de Google existente.</p>
+            </div>
+            
+            <div class="step">
+                <h4>Crear un Nuevo Proyecto</h4>
+                <p>En el panel de Google Cloud, haz clic en "Crear Proyecto" y asígnale un nombre descriptivo a tu proyecto.</p>
+            </div>
+            
+            <div class="step">
+                <h4>Habilitar APIs Necesarias</h4>
+                <p>Ve a "APIs y Servicios" > "Biblioteca" y habilita las APIs que necesites: Maps JavaScript API, Geocoding API, Places API, etc.</p>
+            </div>
+            
+            <div class="step">
+                <h4>Crear Credenciales</h4>
+                <p>En "APIs y Servicios" > "Credenciales", haz clic en "Crear Credenciales" y selecciona "Clave de API".</p>
+            </div>
+            
+            <div class="step">
+                <h4>Restringir y Proteger tu Clave</h4>
+                <p>Configura restricciones de aplicación y API para proteger tu clave de usos no autorizados. Puedes limitar por dominio, dirección IP o referente HTTP.</p>
+            </div>
+        </div>
+        
+        <div class="code-block">
+            <pre>// Ejemplo de uso de API de Geolocalización en JavaScript
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            console.log(`Ubicación: ${lat}, ${lng}`);
+        },
+        function(error) {
+            console.error('Error al obtener ubicación:', error);
+        }
+    );
+}</pre>
+        </div>
+    </section>
+    
+    <section id="ubicaciones" class="fade-in">
+        <h2 class="section-title">Tipos de Ubicación</h2>
+        <p class="section-subtitle">Comparativa de tecnologías de posicionamiento</p>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Precisión</th>
+                        <th>Tecnología</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong style="color: var(--accent);">GPS (Sistema de Posicionamiento Global)</strong></td>
+                        <td>Utiliza satélites para determinar posición exacta con coordenadas lat/long</td>
+                        <td>Alta (5-10 metros)</td>
+                        <td>Señales satelitales</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color: var(--accent);">Cell ID (Identificación de Celda)</strong></td>
+                        <td>Basado en torres de telefonía celular más cercanas</td>
+                        <td>Media (100-1000 metros)</td>
+                        <td>Redes celulares</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color: var(--accent);">Wi-Fi Positioning</strong></td>
+                        <td>Triangulación mediante puntos de acceso Wi-Fi conocidos</td>
+                        <td>Media-Alta (20-50 metros)</td>
+                        <td>Redes inalámbricas</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color: var(--accent);">IP Geolocation</strong></td>
+                        <td>Estimación basada en la dirección IP del dispositivo</td>
+                        <td>Baja (Ciudad/Región)</td>
+                        <td>Base de datos IP</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color: var(--accent);">Bluetooth Beacons</strong></td>
+                        <td>Micro-localización en espacios interiores</td>
+                        <td>Muy Alta (1-5 metros)</td>
+                        <td>Señales Bluetooth Low Energy</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h3 style="color: var(--text-bright); margin: 4rem 0 2rem; font-size: 1.8rem; text-align: center;">Mapa Interactivo</h3>
+        
+        <div id="locationStatus" class="location-status">
+            🌍 Obteniendo tu ubicación...
+        </div>
+        
+        <div id="map"></div>
+    </section>
+    
+    <footer>
+        <p>&copy; 2026 GeoLocate Pro. Proyecto Educativo de Geolocalización. Todos los derechos reservados.</p>
+    </footer>
+    
+    <script>
+        // Scroll Animation Observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerOffset = 80;
+                    const elementPosition = target.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Global variables
+        let map;
+        let marker;
+        let infoWindow;
+        
+        // Initialize Map
+        function initMap() {
+            const statusElement = document.getElementById('locationStatus');
+            
+            // Default location (Saltillo, Coahuila, Mexico)
+            const defaultLocation = { lat: 25.4232, lng: -100.9931 };
+            
+            // Map styles (dark theme)
+            const mapStyles = [
+                {
+                    "elementType": "geometry",
+                    "stylers": [{"color": "#0a192f"}]
+                },
+                {
+                    "elementType": "labels.text.fill",
+                    "stylers": [{"color": "#8892b0"}]
+                },
+                {
+                    "elementType": "labels.text.stroke",
+                    "stylers": [{"color": "#0a192f"}]
+                },
+                {
+                    "featureType": "administrative",
+                    "elementType": "geometry.stroke",
+                    "stylers": [{"color": "#64ffda"}]
+                },
+                {
+                    "featureType": "road",
+                    "elementType": "geometry",
+                    "stylers": [{"color": "#172a45"}]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "geometry",
+                    "stylers": [{"color": "#0e2439"}]
+                }
+            ];
+            
+            // Create map
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 13,
+                center: defaultLocation,
+                styles: mapStyles,
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true,
+                zoomControl: true
+            });
+            
+            // Create marker
+            marker = new google.maps.Marker({
+                position: defaultLocation,
+                map: map,
+                title: 'Saltillo, Coahuila, México',
+                animation: google.maps.Animation.DROP
+            });
+            
+            // Create info window
+            infoWindow = new google.maps.InfoWindow({
+                content: '<div style="color: #0a192f; padding: 10px;"><h3 style="margin: 0 0 5px 0;">Saltillo, Coahuila</h3><p style="margin: 0;">Ubicación predeterminada</p></div>'
+            });
+            
+            // Add click listener to marker
+            marker.addListener('click', function() {
+                infoWindow.open(map, marker);
+            });
+            
+            // Try to get user's actual location
+            if (navigator.geolocation) {
+                statusElement.innerHTML = '🔍 Buscando tu ubicación...';
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        // Update map center and marker
+                        map.setCenter(userLocation);
+                        marker.setPosition(userLocation);
+                        marker.setAnimation(google.maps.Animation.BOUNCE);
+                        
+                        setTimeout(() => {
+                            marker.setAnimation(null);
+                        }, 2000);
+                        
+                        // Update info window
+                        const accuracy = position.coords.accuracy;
+                        infoWindow.setContent(
+                            '<div style="color: #0a192f; padding: 10px; font-family: DM Sans, sans-serif;">' +
+                            '<h3 style="margin: 0 0 10px 0; font-family: Playfair Display, serif;">📍 Tu Ubicación</h3>' +
+                            '<p style="margin: 5px 0; font-size: 0.9rem;">' +
+                            '<strong>Latitud:</strong> ' + userLocation.lat.toFixed(6) + '<br>' +
+                            '<strong>Longitud:</strong> ' + userLocation.lng.toFixed(6) + '<br>' +
+                            '<strong>Precisión:</strong> ±' + Math.round(accuracy) + ' metros' +
+                            '</p></div>'
+                        );
+                        
+                        // Show info window automatically
+                        infoWindow.open(map, marker);
+                        
+                        // Update status
+                        statusElement.innerHTML = '✅ Ubicación obtenida correctamente - Lat: ' + 
+                            userLocation.lat.toFixed(4) + ', Lng: ' + userLocation.lng.toFixed(4);
+                        statusElement.style.background = 'rgba(100, 255, 218, 0.2)';
+                        statusElement.style.borderColor = 'var(--accent)';
+                    },
+                    function(error) {
+                        let errorMsg = '';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMsg = '⚠️ Permiso denegado. Por favor permite el acceso a tu ubicación.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMsg = '⚠️ Ubicación no disponible. Mostrando ubicación predeterminada.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMsg = '⚠️ Tiempo de espera agotado. Mostrando ubicación predeterminada.';
+                                break;
+                            default:
+                                errorMsg = '⚠️ Error desconocido. Mostrando ubicación predeterminada.';
+                        }
+                        
+                        statusElement.innerHTML = errorMsg;
+                        statusElement.style.background = 'rgba(255, 107, 107, 0.2)';
+                        statusElement.style.borderColor = '#ff6b6b';
+                        statusElement.style.color = '#ff6b6b';
+                        
+                        console.log('Geolocation error:', error);
+                        
+                        // Show default location info
+                        infoWindow.open(map, marker);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                statusElement.innerHTML = '❌ Geolocalización no soportada en este navegador';
+                statusElement.style.background = 'rgba(255, 107, 107, 0.2)';
+                statusElement.style.borderColor = '#ff6b6b';
+                statusElement.style.color = '#ff6b6b';
+            }
+        }
+        
+        // Handle map loading errors
+        window.gm_authFailure = function() {
+            alert('Error al cargar Google Maps. Por favor verifica tu API Key.');
+        };
+    </script>
+    
+    <!-- Google Maps API with your key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmWVEvbBHzZYtXeZfwOzAZ--l03XkGSzI&callback=initMap" async defer></script>
+</body>
+</html>
